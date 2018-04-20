@@ -27,6 +27,7 @@ private slots:
 
     //Otros slots
     void cambiaLEDs();
+    void cambiaColor(QColor);
     void tivaStatusChanged(int status,QString message);
     void pingResponseReceived(void);
     void CommandRejected(int16_t code);    

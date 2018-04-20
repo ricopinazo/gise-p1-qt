@@ -268,3 +268,27 @@ void QTivaRPC::LEDPwmBrightness(double value)
     }
 }
 
+
+void QTivaRPC::LEDPwmColor(uint8_t red, uint8_t green, uint8_t blue)
+{
+    PARAMETERS_LED_PWM_COLOR parametro;
+    uint8_t pui8Frame[MAX_FRAME_SIZE];
+    int size;
+    if(connected)
+    {
+        // Se rellenan los parametros del paquete (en este caso, el color)
+        parametro.colors[0] = red;
+        parametro.colors[1] = green;
+        parametro.colors[2] = blue;
+
+       /* parametro.red = red;
+        parametro.green = green;
+        parametro.blue = blue;*/
+        // Se crea la trama con n de secuencia 0; comando COMANDO_LEDS; se le pasa la
+        // estructura de parametros, indicando su tamaño; el nº final es el tamaño maximo
+        // de trama
+        size=create_frame((uint8_t *)pui8Frame, COMMAND_LED_PWM_COLOR, &parametro.colors, sizeof(parametro), MAX_FRAME_SIZE);
+        // Se se pudo crear correctamente, se envia la trama
+        if (size>0) serial.write((char *)pui8Frame,size);
+    }
+}

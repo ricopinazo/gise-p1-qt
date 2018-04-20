@@ -46,6 +46,7 @@ public slots:
     void ping(void); //Este Slot provoca el envio del comando PING
     void LEDGpio(bool red, bool green, bool blue); //Este Slot provoca el envio del comando LED
     void LEDPwmBrightness(double value); //Este Slot provoca el envio del comando Brightness
+    void LEDPwmColor(uint8_t red, uint8_t green, uint8_t blue); // Este Slot provoca el envío de color
 
 private slots:
     void processIncommingSerialData(); //Este Slot se conecta a la señal readyRead(..) del puerto serie. Se encarga de procesar y decodificar los mensajes que llegan de la TIVA y

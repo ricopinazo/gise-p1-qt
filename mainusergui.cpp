@@ -54,6 +54,7 @@ MainUserGUI::MainUserGUI(QWidget *parent) :  // Constructor de la clase
     connect(ui->Knob,SIGNAL(valueChanged(double)),&tiva,SLOT(LEDPwmBrightness(double)));
     connect(&tiva,SIGNAL(pingReceivedFromTiva()),this,SLOT(pingResponseReceived()));
     connect(&tiva,SIGNAL(commandRejectedFromTiva(int16_t)),this,SLOT(CommandRejected(int16_t)));
+    //connect(ui->colorWheel, SIGNAL(colorChanged(QColor)), this, SLOT(cambiaColor(QColor)));
 }
 
 MainUserGUI::~MainUserGUI() // Destructor de la clase
@@ -133,6 +134,16 @@ void MainUserGUI::cambiaLEDs(void)
     tiva.LEDGpio(ui->rojo->isChecked(),ui->verde->isChecked(),ui->azul->isChecked());
 }
 
+void MainUserGUI::cambiaColor(QColor)
+{
+    uint8_t red, green, blue;
+    QColor qcolor;
+    red = qcolor.red();
+    green = qcolor.green();
+    blue = qcolor.blue();
+    tiva.LEDPwmColor(red, green, blue);
+}
+
 //Slots Asociado al boton que limpia los mensajes del interfaz
 void MainUserGUI::on_pushButton_clicked()
 {
@@ -161,7 +172,9 @@ void MainUserGUI::CommandRejected(int16_t code)
 
 
 void MainUserGUI::on_colorWheel_colorChanged(const QColor &arg1)
+
 {
-    //Poner aqui el codigo para pedirle al objeto "tiva" (clase QRemoteTIVA) que envíe la orden de cambiar el Color hacia el microcontrolador
+    tiva.LEDPwmColor(ui->colorWheel->color().red(), ui->colorWheel->color().green(),
+                     ui->colorWheel->color().blue());
 
 }
