@@ -84,6 +84,20 @@ void QTivaRPC::processIncommingSerialData()
                         // Crea una ventana popup con el mensaje indicado
                         emit pingReceivedFromTiva();
                         break;
+                    /*******************************************************************************************/
+
+
+                    case COMMAND_BUTTONS_STATUS:
+
+                        PARAMETERS_BUTTONS_STATUS parametro;
+                        if (check_and_extract_command_param(ptrtoparam, tam, sizeof(parametro),&parametro)>0)
+                        {
+                            // Se envían los estados negados porque 0 es pulsado en la tiva
+                            emit buttonsStatusReceivedFromTiva(!(bool)parametro.button1, !(bool)parametro.button2);
+                        }
+
+
+                    /*******************************************************************************************/
 
                     case COMMAND_REJECTED:
                     {
@@ -281,14 +295,26 @@ void QTivaRPC::LEDPwmColor(uint8_t red, uint8_t green, uint8_t blue)
         parametro.colors[1] = green;
         parametro.colors[2] = blue;
 
-       /* parametro.red = red;
-        parametro.green = green;
-        parametro.blue = blue;*/
         // Se crea la trama con n de secuencia 0; comando COMANDO_LEDS; se le pasa la
         // estructura de parametros, indicando su tamaño; el nº final es el tamaño maximo
         // de trama
         size=create_frame((uint8_t *)pui8Frame, COMMAND_LED_PWM_COLOR, &parametro.colors, sizeof(parametro), MAX_FRAME_SIZE);
         // Se se pudo crear correctamente, se envia la trama
         if (size>0) serial.write((char *)pui8Frame,size);
+    }
+}
+
+void QTivaRPC::buttonsRequest()
+{
+    char paquete[MAX_FRAME_SIZE];
+    int size;
+
+    if (connected) // Para que no se intenten enviar datos si la conexion USB no esta activa
+    {
+        // El comando ButtonsRequest no necesita parametros; de ahí el NULL, y el 0 final.
+        // No vamos a usar el mecanismo de numeracion de tramas; pasamos un 0 como n de trama
+        size=create_frame((unsigned char *)paquete, COMMAND_BUTTONS_REQUEST, NULL, 0, MAX_FRAME_SIZE);
+        // Si la trama se creó correctamente, se escribe el paquete por el puerto serie USB
+        if (size>0) serial.write(paquete,size);
     }
 }

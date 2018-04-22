@@ -53,8 +53,11 @@ MainUserGUI::MainUserGUI(QWidget *parent) :  // Constructor de la clase
     connect(ui->pingButton,SIGNAL(clicked(bool)),&tiva,SLOT(ping()));
     connect(ui->Knob,SIGNAL(valueChanged(double)),&tiva,SLOT(LEDPwmBrightness(double)));
     connect(&tiva,SIGNAL(pingReceivedFromTiva()),this,SLOT(pingResponseReceived()));
+    connect(&tiva,SIGNAL(buttonsStatusReceivedFromTiva(bool,bool)),this,SLOT());
     connect(&tiva,SIGNAL(commandRejectedFromTiva(int16_t)),this,SLOT(CommandRejected(int16_t)));
-    //connect(ui->colorWheel, SIGNAL(colorChanged(QColor)), this, SLOT(cambiaColor(QColor)));
+
+
+    waiting_buttons_status = false;
 }
 
 MainUserGUI::~MainUserGUI() // Destructor de la clase
@@ -134,16 +137,6 @@ void MainUserGUI::cambiaLEDs(void)
     tiva.LEDGpio(ui->rojo->isChecked(),ui->verde->isChecked(),ui->azul->isChecked());
 }
 
-void MainUserGUI::cambiaColor(QColor)
-{
-    uint8_t red, green, blue;
-    QColor qcolor;
-    red = qcolor.red();
-    green = qcolor.green();
-    blue = qcolor.blue();
-    tiva.LEDPwmColor(red, green, blue);
-}
-
 //Slots Asociado al boton que limpia los mensajes del interfaz
 void MainUserGUI::on_pushButton_clicked()
 {
@@ -163,6 +156,16 @@ void MainUserGUI::pingResponseReceived()
     ventanaPopUp.show();
 }
 
+void MainUserGUI::buttonsStatusReceived(bool button1, bool button2)
+{
+    // Actualiza el estado de los leds en consecuencia
+    if (waiting_buttons_status || ui->modoCheck->isChecked())
+    {
+        ui->led1->setChecked(button1);
+        ui->led2->setChecked(button2);
+        waiting_buttons_status = false;
+    }
+}
 
 //Este se ejecuta cuando se recibe un mensaje de comando rechazado
 void MainUserGUI::CommandRejected(int16_t code)
@@ -172,9 +175,16 @@ void MainUserGUI::CommandRejected(int16_t code)
 
 
 void MainUserGUI::on_colorWheel_colorChanged(const QColor &arg1)
-
 {
     tiva.LEDPwmColor(ui->colorWheel->color().red(), ui->colorWheel->color().green(),
                      ui->colorWheel->color().blue());
+}
 
+void MainUserGUI::on_sondeoButton_clicked()
+{
+    if(!ui->modoCheck->isChecked()) //Si el modo automático no está activado...
+    {
+        tiva.buttonsRequest();  // Realiza una petición de sondeo
+        waiting_buttons_status = true;
+    }
 }

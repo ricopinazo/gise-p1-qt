@@ -40,6 +40,7 @@ public:
 signals:
     void statusChanged(int status, QString message); //Esta señal se genera al realizar la conexión/desconexion o cuando se produce un error de comunicacion
     void pingReceivedFromTiva(void); //Esta señal se genera al recibir una respuesta de PING de la TIVA
+    void buttonsStatusReceivedFromTiva(bool button1, bool button2); //Esta señal se genera cuando se recibe el estado de los botones
     void commandRejectedFromTiva(int16_t code); //Esta señal se genera al recibir una respuesta de Comando Rechazado desde la TIVA
 public slots:
     void startRPCClient(QString puerto); //Este Slot arranca la comunicacion
@@ -47,6 +48,7 @@ public slots:
     void LEDGpio(bool red, bool green, bool blue); //Este Slot provoca el envio del comando LED
     void LEDPwmBrightness(double value); //Este Slot provoca el envio del comando Brightness
     void LEDPwmColor(uint8_t red, uint8_t green, uint8_t blue); // Este Slot provoca el envío de color
+    void buttonsRequest();
 
 private slots:
     void processIncommingSerialData(); //Este Slot se conecta a la señal readyRead(..) del puerto serie. Se encarga de procesar y decodificar los mensajes que llegan de la TIVA y

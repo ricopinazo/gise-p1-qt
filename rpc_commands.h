@@ -10,7 +10,9 @@ typedef enum {
     COMMAND_PING,
     COMMAND_LED_GPIO,
     COMMAND_LED_PWM_BRIGHTNESS,
-    COMMAND_LED_PWM_COLOR
+    COMMAND_LED_PWM_COLOR,
+    COMMAND_BUTTONS_STATUS,
+    COMMAND_BUTTONS_REQUEST
     //etc, etc...
 } commandTypes;
 
@@ -40,6 +42,12 @@ typedef struct {
 typedef struct{
    uint32_t colors[3];
 } PARAMETERS_LED_PWM_COLOR;
+
+typedef struct{
+    uint8_t button1:1;
+    uint8_t padding:3;
+    uint8_t button2:1;
+} PARAMETERS_BUTTONS_STATUS;
 
 #pragma pack()	//...Pero solo para los comandos que voy a intercambiar, no para el resto.
 

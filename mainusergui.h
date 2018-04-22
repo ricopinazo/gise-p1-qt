@@ -24,12 +24,13 @@ private slots:
     void on_serialPortComboBox_currentIndexChanged(const QString &arg1);
     void on_pushButton_clicked();    
     void on_colorWheel_colorChanged(const QColor &arg1);
+    void on_sondeoButton_clicked();
 
     //Otros slots
     void cambiaLEDs();
-    void cambiaColor(QColor);
     void tivaStatusChanged(int status,QString message);
     void pingResponseReceived(void);
+    void buttonsStatusReceived(bool button1, bool button2);
     void CommandRejected(int16_t code);    
 
 private:
@@ -43,6 +44,7 @@ private:
     int transactionCount;
     QMessageBox ventanaPopUp;
     QTivaRPC tiva; //Objeto para gestionar la ejecucion acciones en el microcontrolador y/o recibir eventos desde él
+    bool waiting_buttons_status;
 
 };
 
