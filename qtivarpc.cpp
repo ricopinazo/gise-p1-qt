@@ -84,20 +84,6 @@ void QTivaRPC::processIncommingSerialData()
                         // Crea una ventana popup con el mensaje indicado
                         emit pingReceivedFromTiva();
                         break;
-                    /*******************************************************************************************/
-
-
-                    case COMMAND_BUTTONS_STATUS:
-
-                        PARAMETERS_BUTTONS_STATUS parametro;
-                        if (check_and_extract_command_param(ptrtoparam, tam, sizeof(parametro),&parametro)>0)
-                        {
-                            // Se envían los estados negados porque 0 es pulsado en la tiva
-                            emit buttonsStatusReceivedFromTiva(!(bool)parametro.button1, !(bool)parametro.button2);
-                        }
-
-
-                    /*******************************************************************************************/
 
                     case COMMAND_REJECTED:
                     {
@@ -113,11 +99,34 @@ void QTivaRPC::processIncommingSerialData()
                         {
                             emit commandRejectedFromTiva(-1);
                         }
-                    }
                         break;
+                    }
 
-                        //Falta por implementar la recepcion de mas tipos de comando
-                        //habria que decodificarlos y emitir las señales correspondientes con los parametros que correspondan
+                    /*******************************************************************************************/
+
+                    case COMMAND_BUTTONS_STATUS:
+                    {
+                        PARAMETERS_BUTTONS_STATUS parametro;
+                        if (check_and_extract_command_param(ptrtoparam, tam, sizeof(parametro),&parametro)>0)
+                        {
+                            // Se envían los estados negados porque 0 es pulsado en la tiva
+                            emit buttonsStatusReceivedFromTiva(!(bool)parametro.buttons.button1, !(bool)parametro.buttons.button2);
+                        }
+                        break;
+                    }
+
+                    case COMMAND_BUTTONS_ANSWER:
+                    {
+                        PARAMETERS_BUTTONS_ANSWER parametro;
+                        if (check_and_extract_command_param(ptrtoparam, tam, sizeof(parametro),&parametro)>0)
+                        {
+                            // Se envían los estados negados porque 0 es pulsado en la tiva
+                            emit buttonsAnswerReceivedFromTiva(!(bool)parametro.buttons.button1, !(bool)parametro.buttons.button2);
+                        }
+                        break;
+                    }
+
+                    /*******************************************************************************************/
 
                     default:
                         //Este error lo notifico mediante la señal statusChanged

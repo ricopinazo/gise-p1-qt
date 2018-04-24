@@ -30,8 +30,9 @@ private slots:
     void cambiaLEDs();
     void tivaStatusChanged(int status,QString message);
     void pingResponseReceived(void);
+    void CommandRejected(int16_t code);
     void buttonsStatusReceived(bool button1, bool button2);
-    void CommandRejected(int16_t code);    
+    void buttonsAnswerReceived(bool button1, bool button2);
 
 private:
     // funciones privadas

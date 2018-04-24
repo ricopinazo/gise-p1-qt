@@ -40,8 +40,9 @@ public:
 signals:
     void statusChanged(int status, QString message); //Esta señal se genera al realizar la conexión/desconexion o cuando se produce un error de comunicacion
     void pingReceivedFromTiva(void); //Esta señal se genera al recibir una respuesta de PING de la TIVA
-    void buttonsStatusReceivedFromTiva(bool button1, bool button2); //Esta señal se genera cuando se recibe el estado de los botones
     void commandRejectedFromTiva(int16_t code); //Esta señal se genera al recibir una respuesta de Comando Rechazado desde la TIVA
+    void buttonsStatusReceivedFromTiva(bool button1, bool button2); //Esta señal se genera cuando se recibe el estado de los botones
+    void buttonsAnswerReceivedFromTiva(bool button1, bool button2); //Esta señal se genera cuando se recibe el la respuesta de los botones
 public slots:
     void startRPCClient(QString puerto); //Este Slot arranca la comunicacion
     void ping(void); //Este Slot provoca el envio del comando PING

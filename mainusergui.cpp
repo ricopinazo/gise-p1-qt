@@ -53,11 +53,9 @@ MainUserGUI::MainUserGUI(QWidget *parent) :  // Constructor de la clase
     connect(ui->pingButton,SIGNAL(clicked(bool)),&tiva,SLOT(ping()));
     connect(ui->Knob,SIGNAL(valueChanged(double)),&tiva,SLOT(LEDPwmBrightness(double)));
     connect(&tiva,SIGNAL(pingReceivedFromTiva()),this,SLOT(pingResponseReceived()));
-    connect(&tiva,SIGNAL(buttonsStatusReceivedFromTiva(bool,bool)),this,SLOT());
     connect(&tiva,SIGNAL(commandRejectedFromTiva(int16_t)),this,SLOT(CommandRejected(int16_t)));
-
-
-    waiting_buttons_status = false;
+    connect(&tiva,SIGNAL(buttonsStatusReceivedFromTiva(bool,bool)),this,SLOT(buttonsStatusReceived(bool, bool)));
+    connect(&tiva,SIGNAL(buttonsAnswerReceivedFromTiva(bool,bool)),this,SLOT(buttonsAnswerReceived(bool, bool)));
 }
 
 MainUserGUI::~MainUserGUI() // Destructor de la clase
@@ -156,28 +154,32 @@ void MainUserGUI::pingResponseReceived()
     ventanaPopUp.show();
 }
 
-void MainUserGUI::buttonsStatusReceived(bool button1, bool button2)
-{
-    // Actualiza el estado de los leds en consecuencia
-    if (waiting_buttons_status || ui->modoCheck->isChecked())
-    {
-        ui->led1->setChecked(button1);
-        ui->led2->setChecked(button2);
-        waiting_buttons_status = false;
-    }
-}
-
 //Este se ejecuta cuando se recibe un mensaje de comando rechazado
 void MainUserGUI::CommandRejected(int16_t code)
 {
     ui->statusLabel->setText(tr("Status: Comando rechazado,%1").arg(code));
 }
 
-
-void MainUserGUI::on_colorWheel_colorChanged(const QColor &arg1)
+void MainUserGUI::buttonsStatusReceived(bool button1, bool button2)
 {
-    tiva.LEDPwmColor(ui->colorWheel->color().red(), ui->colorWheel->color().green(),
-                     ui->colorWheel->color().blue());
+    // Actualiza el estado de los leds en consecuencia
+    if (ui->modoCheck->isChecked())
+    {
+        ui->led1->setChecked(button1);
+        ui->led2->setChecked(button2);
+    }
+}
+
+void MainUserGUI::buttonsAnswerReceived(bool button1, bool button2)
+{
+    // Actualiza el estado de los leds en consecuencia
+    ui->led1->setChecked(button1);
+    ui->led2->setChecked(button2);
+}
+
+void MainUserGUI::on_colorWheel_colorChanged(const QColor &qcolor)
+{
+    tiva.LEDPwmColor(qcolor.red(), qcolor.green(), qcolor.blue());
 }
 
 void MainUserGUI::on_sondeoButton_clicked()
