@@ -155,13 +155,6 @@
    <property name="locale">
     <locale language="Spanish" country="Spain"/>
    </property>
-   <property name="color">
-    <color>
-     <red>255</red>
-   	 <green>0</green>
-   	 <blue>0</blue>
-   	</color>
-   </property>
   </widget>
   <widget class="Led" name="led1">
    <property name="geometry">
@@ -238,6 +231,9 @@
    </property>
    <property name="text">
     <string>Modo automático</string>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="sondeoButton">

@@ -63,7 +63,7 @@ void QTivaRPC::processIncommingSerialData()
         {
             incommingDataBuffer.remove(0,StartCharPosition); //Si hay datos anteriores al caracter de inicio, son un trozo de trama incompleto. Los tiro.
             tam=StopCharPosition-StartCharPosition+1;//El tamanio de la trama es el numero de bytes desde inicio hasta fin, ambos inclusive.
-            if (tam>=MINIMUN_FRAME_SIZE)
+            if (tam>=(int)MINIMUN_FRAME_SIZE)
             {
                 pui8Frame=(uint8_t*)incommingDataBuffer.data(); // Puntero de trama al inicio del array de bytes
                 pui8Frame++; //Nos saltamos el caracter de inicio.
