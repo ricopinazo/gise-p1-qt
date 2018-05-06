@@ -327,3 +327,25 @@ void QTivaRPC::buttonsRequest()
         if (size>0) serial.write(paquete,size);
     }
 }
+
+void QTivaRPC::samplingConfig(bool active, bool mode12, int rate)
+{
+    PARAMETERS_SAMPLING_CONFIG parametro;
+    uint8_t pui8Frame[MAX_FRAME_SIZE];
+    int size;
+    if(connected)
+    {
+        // Se rellenan los parametros del paquete (en este caso, la configuración)
+        parametro.config.active = (uint8_t)active;
+        parametro.config.mode12 = (uint8_t)mode12;
+        parametro.config.rate = (uint16_t)rate;
+
+        // Se crea la trama con n de secuencia 0; comando COMANDO_LEDS; se le pasa la
+        // estructura de parametros, indicando su tamaño; el nº final es el tamaño maximo
+        // de trama
+        size=create_frame((uint8_t *)pui8Frame, COMMAND_SAMPLING_CONFIG, &parametro.config, sizeof(parametro), MAX_FRAME_SIZE);
+        // Si se pudo crear correctamente, se envia la trama
+        if (size>0) serial.write((char *)pui8Frame,size);
+    }
+}
+

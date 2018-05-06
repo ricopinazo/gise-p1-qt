@@ -1,4 +1,4 @@
-#include "mainusergui.h"
+﻿#include "mainusergui.h"
 #include "ui_mainusergui.h"
 #include <QSerialPort>      // Comunicacion por el puerto serie
 #include <QSerialPortInfo>  // Comunicacion por el puerto serie
@@ -42,10 +42,18 @@ MainUserGUI::MainUserGUI(QWidget *parent) :  // Constructor de la clase
     ventanaPopUp.setWindowTitle(tr("Evento"));
     ventanaPopUp.setParent(this,Qt::Popup);
 
+    //Configura la validación de la entrada de texto para la tasa de muestreo
+    rateLineEditValidator = new QIntValidator();
+    rateLineEditValidator->setRange(1,5000);
+    ui->rateLineEdit->setValidator(rateLineEditValidator);
+
     //Conexion de signals de los widgets del interfaz con slots propios de este objeto
     connect(ui->rojo,SIGNAL(toggled(bool)),this,SLOT(cambiaLEDs()));
     connect(ui->verde,SIGNAL(toggled(bool)),this,SLOT(cambiaLEDs()));
     connect(ui->azul,SIGNAL(toggled(bool)),this,SLOT(cambiaLEDs()));
+    connect(ui->activeCheckBox,SIGNAL(toggled(bool)),this,SLOT(samplingConfigChanged()));
+    connect(ui->mode8RadioButton,SIGNAL(toggled(bool)),this,SLOT(samplingConfigChanged()));
+    connect(ui->rateSlider,SIGNAL(sliderMoved(int)),this,SLOT(samplingConfigChanged()));
 
 
     //Conectamos Slots del objeto "Tiva" con Slots de nuestra aplicacion (o con widgets)
@@ -135,6 +143,16 @@ void MainUserGUI::cambiaLEDs(void)
     tiva.LEDGpio(ui->rojo->isChecked(),ui->verde->isChecked(),ui->azul->isChecked());
 }
 
+void MainUserGUI::samplingConfigChanged()
+{
+    // Actualiza el estado del cuadro de texto por si se hubiese movido el slider
+    QString str;
+    str.setNum(ui->rateSlider->value());
+    ui->rateLineEdit->setText(str);
+
+    tiva.samplingConfig(ui->activeCheckBox->isChecked(), ui->mode12RadioButton->isChecked(), ui->rateSlider->value());
+}
+
 //Slots Asociado al boton que limpia los mensajes del interfaz
 void MainUserGUI::on_pushButton_clicked()
 {
@@ -187,6 +205,10 @@ void MainUserGUI::on_sondeoButton_clicked()
     if(!ui->modoCheck->isChecked()) //Si el modo automático no está activado...
     {
         tiva.buttonsRequest();  // Realiza una petición de sondeo
-        waiting_buttons_status = true;
     }
+}
+
+void MainUserGUI::on_rateLineEdit_editingFinished()
+{
+    ui->rateSlider->setValue(ui->rateLineEdit->text().toInt());
 }

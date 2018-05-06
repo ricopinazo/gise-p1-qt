@@ -13,7 +13,8 @@ typedef enum {
     COMMAND_LED_PWM_COLOR,
     COMMAND_BUTTONS_STATUS,
     COMMAND_BUTTONS_REQUEST,
-    COMMAND_BUTTONS_ANSWER
+    COMMAND_BUTTONS_ANSWER,
+    COMMAND_SAMPLING_CONFIG
     //etc, etc...
 } commandTypes;
 
@@ -59,6 +60,14 @@ typedef union{
         uint8_t button2:1;
     } buttons;
 } PARAMETERS_BUTTONS_ANSWER;
+
+typedef union{
+    struct {
+        uint8_t active:1;
+        uint8_t mode12:1;
+        uint16_t rate:14;
+    } config;
+} PARAMETERS_SAMPLING_CONFIG;
 
 #pragma pack()	//...Pero solo para los comandos que voy a intercambiar, no para el resto.
 
