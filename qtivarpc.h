@@ -43,6 +43,8 @@ signals:
     void commandRejectedFromTiva(int16_t code); //Esta señal se genera al recibir una respuesta de Comando Rechazado desde la TIVA
     void buttonsStatusReceivedFromTiva(bool button1, bool button2); //Esta señal se genera cuando se recibe el estado de los botones
     void buttonsAnswerReceivedFromTiva(bool button1, bool button2); //Esta señal se genera cuando se recibe el la respuesta de los botones
+    void samplesReceivedFromTiva(uint16_t *channel0, uint16_t *channel1, uint16_t *channel2, uint16_t *channel3);
+
 public slots:
     void startRPCClient(QString puerto); //Este Slot arranca la comunicacion
     void ping(void); //Este Slot provoca el envio del comando PING

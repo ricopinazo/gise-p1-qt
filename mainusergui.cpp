@@ -47,13 +47,39 @@ MainUserGUI::MainUserGUI(QWidget *parent) :  // Constructor de la clase
     rateLineEditValidator->setRange(1,5000);
     ui->rateLineEdit->setValidator(rateLineEditValidator);
 
+    //Configura la gráfica
+    for(int k = 0; k < 1024; ++k)
+    {
+        xVal[k] = (double)k;
+        yVal[0][k] = 0.0;
+        yVal[1][k] = 0.0;
+        yVal[2][k] = 0.0;
+        yVal[3][k] = 0.0;
+    }
+
+    for(int k = 0; k < 4; ++k)
+    {
+        channel[k] = new QwtPlotCurve();
+        channel[k]->attach(ui->graph);
+        channel[k]->setRawSamples(xVal, yVal[k], 1024);
+    }
+
+    channel[0]->setPen(Qt::red);
+    channel[0]->setPen(Qt::cyan);
+    channel[0]->setPen(Qt::yellow);
+    channel[0]->setPen(Qt::green);
+
+    grid = new QwtPlotGrid();
+    grid->attach(ui->graph);
+    ui->graph->setAutoReplot(false);
+
     //Conexion de signals de los widgets del interfaz con slots propios de este objeto
     connect(ui->rojo,SIGNAL(toggled(bool)),this,SLOT(cambiaLEDs()));
     connect(ui->verde,SIGNAL(toggled(bool)),this,SLOT(cambiaLEDs()));
     connect(ui->azul,SIGNAL(toggled(bool)),this,SLOT(cambiaLEDs()));
     connect(ui->activeCheckBox,SIGNAL(toggled(bool)),this,SLOT(samplingConfigChanged()));
     connect(ui->mode8RadioButton,SIGNAL(toggled(bool)),this,SLOT(samplingConfigChanged()));
-    connect(ui->rateSlider,SIGNAL(sliderMoved(int)),this,SLOT(samplingConfigChanged()));
+    connect(ui->rateSlider,SIGNAL(valueChanged(int)),this,SLOT(samplingConfigChanged()));
 
 
     //Conectamos Slots del objeto "Tiva" con Slots de nuestra aplicacion (o con widgets)
@@ -64,6 +90,8 @@ MainUserGUI::MainUserGUI(QWidget *parent) :  // Constructor de la clase
     connect(&tiva,SIGNAL(commandRejectedFromTiva(int16_t)),this,SLOT(CommandRejected(int16_t)));
     connect(&tiva,SIGNAL(buttonsStatusReceivedFromTiva(bool,bool)),this,SLOT(buttonsStatusReceived(bool, bool)));
     connect(&tiva,SIGNAL(buttonsAnswerReceivedFromTiva(bool,bool)),this,SLOT(buttonsAnswerReceived(bool, bool)));
+    connect(&tiva,SIGNAL(samplesReceivedFromTiva(uint16_t*,uint16_t*,uint16_t*,uint16_t*)),
+                       this,SLOT(samplesReceived(uint16_t*,uint16_t*,uint16_t*,uint16_t*)));
 }
 
 MainUserGUI::~MainUserGUI() // Destructor de la clase
@@ -193,6 +221,30 @@ void MainUserGUI::buttonsAnswerReceived(bool button1, bool button2)
     // Actualiza el estado de los leds en consecuencia
     ui->led1->setChecked(button1);
     ui->led2->setChecked(button2);
+}
+
+void MainUserGUI::samplesReceived(uint16_t *channel0, uint16_t *channel1, uint16_t *channel2, uint16_t *channel3)
+{
+    if(ui->activeCheckBox->isChecked())
+    {
+        for(int k = 0; k < (1024 - 8); ++k)
+        {
+            yVal[0][k] =  yVal[0][k + 8];
+            yVal[1][k] =  yVal[1][k + 8];
+            yVal[2][k] =  yVal[2][k + 8];
+            yVal[3][k] =  yVal[3][k + 8];
+        }
+
+        for(int k = 1024 + 8; k < 1024; ++k)
+        {
+            yVal[0][k] =  channel0[k];
+            yVal[1][k] =  channel1[k];
+            yVal[2][k] =  channel2[k];
+            yVal[3][k] =  channel3[k];
+        }
+
+        ui->graph->replot();
+    }
 }
 
 void MainUserGUI::on_colorWheel_colorChanged(const QColor &qcolor)

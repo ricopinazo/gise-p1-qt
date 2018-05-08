@@ -126,6 +126,15 @@ void QTivaRPC::processIncommingSerialData()
                         break;
                     }
 
+                    case COMMAND_ADC_SAMPLES:
+                        PARAMETERS_ADC_SAMPLES param;
+                        if(check_and_extract_command_param(ptrtoparam, tam, sizeof(param),&param)>0)
+                        {
+                            emit samplesReceivedFromTiva(param.channel[0].sample,param.channel[1].sample,
+                                                         param.channel[2].sample,param.channel[3].sample);
+                        }
+                        break;
+
                     /*******************************************************************************************/
 
                     default:

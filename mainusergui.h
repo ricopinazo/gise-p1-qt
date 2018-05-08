@@ -5,6 +5,8 @@
 #include <QtSerialPort/qserialport.h>
 #include <QMessageBox>
 #include <QIntValidator>    // Para la validación de la entrada de la tasa de muestreo
+#include <qwt_plot_curve.h> // Para usar la gráfica
+#include <qwt_plot_grid.h>
 #include "qtivarpc.h"
 
 namespace Ui {
@@ -30,12 +32,13 @@ private slots:
 
     //Otros slots
     void cambiaLEDs();
+    void samplingConfigChanged();
     void tivaStatusChanged(int status,QString message);
     void pingResponseReceived(void);
     void CommandRejected(int16_t code);
     void buttonsStatusReceived(bool button1, bool button2);
     void buttonsAnswerReceived(bool button1, bool button2);
-    void samplingConfigChanged();
+    void samplesReceived(uint16_t *channel0, uint16_t *channel1, uint16_t *channel2, uint16_t *channel3);
 
 private:
     // funciones privadas
@@ -48,7 +51,12 @@ private:
     int transactionCount;
     QMessageBox ventanaPopUp;
     QTivaRPC tiva; //Objeto para gestionar la ejecucion acciones en el microcontrolador y/o recibir eventos desde él
-    QIntValidator *rateLineEditValidator;
+    QIntValidator *rateLineEditValidator;   // Validador para la entrada de texto de la tasa de muestreo
+    // Gráfica
+    double xVal[1024];
+    double yVal[4][1024];
+    QwtPlotCurve *channel[4];
+    QwtPlotGrid *grid;
 };
 
 #endif // GUIPANEL_H
