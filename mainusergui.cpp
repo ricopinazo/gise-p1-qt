@@ -237,12 +237,12 @@ void MainUserGUI::samplesReceived(uint16_t *channel0, uint16_t *channel1, uint16
             yVal[3][k] =  yVal[3][k + 8];
         }
 
-        for(int k = 1024 - 8; k < 1024; ++k)
+        for(int k = 0; k < 8; ++k)
         {
-            yVal[0][k] =  (double)channel0[k]/4095.0*3.3;
-            yVal[1][k] =  (double)channel1[k]/4095.0*3.3;
-            yVal[2][k] =  (double)channel2[k]/4095.0*3.3;
-            yVal[3][k] =  (double)channel3[k]/4095.0*3.3;
+            yVal[0][k + 1024 - 8] =  (double)channel0[k]/4095.0*3.3;
+            yVal[1][k + 1024 - 8] =  (double)channel1[k]/4095.0*3.3;
+            yVal[2][k + 1024 - 8] =  (double)channel2[k]/4095.0*3.3;
+            yVal[3][k + 1024 - 8] =  (double)channel3[k]/4095.0*3.3;
         }
 
         ui->graph->replot();
