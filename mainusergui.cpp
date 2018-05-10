@@ -65,13 +65,15 @@ MainUserGUI::MainUserGUI(QWidget *parent) :  // Constructor de la clase
     }
 
     channel[0]->setPen(Qt::red);
-    channel[0]->setPen(Qt::cyan);
-    channel[0]->setPen(Qt::yellow);
-    channel[0]->setPen(Qt::green);
+    channel[1]->setPen(Qt::cyan);
+    channel[2]->setPen(Qt::yellow);
+    channel[3]->setPen(Qt::green);
 
     grid = new QwtPlotGrid();
     grid->attach(ui->graph);
     ui->graph->setAutoReplot(false);
+    ui->graph->setAxisScale(QwtPlot::yLeft, -0.5, 3.5, 0);
+    ui->graph->replot();
 
     //Conexion de signals de los widgets del interfaz con slots propios de este objeto
     connect(ui->rojo,SIGNAL(toggled(bool)),this,SLOT(cambiaLEDs()));
@@ -235,12 +237,12 @@ void MainUserGUI::samplesReceived(uint16_t *channel0, uint16_t *channel1, uint16
             yVal[3][k] =  yVal[3][k + 8];
         }
 
-        for(int k = 1024 + 8; k < 1024; ++k)
+        for(int k = 1024 - 8; k < 1024; ++k)
         {
-            yVal[0][k] =  channel0[k];
-            yVal[1][k] =  channel1[k];
-            yVal[2][k] =  channel2[k];
-            yVal[3][k] =  channel3[k];
+            yVal[0][k] =  (double)channel0[k]/4095.0*3.3;
+            yVal[1][k] =  (double)channel1[k]/4095.0*3.3;
+            yVal[2][k] =  (double)channel2[k]/4095.0*3.3;
+            yVal[3][k] =  (double)channel3[k]/4095.0*3.3;
         }
 
         ui->graph->replot();
