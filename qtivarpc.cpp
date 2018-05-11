@@ -133,9 +133,9 @@ void QTivaRPC::processIncommingSerialData()
                         {
                             PARAMETERS_ADC_12BITS_SAMPLES temp;
 
-                            for(int i = 0; i < 8; ++i)
+                            for(int i = 0; i < 4; ++i)
                                 for(int j = 0; j < 8; ++j)
-                                temp.channel[i].sample[j] = ((uint16_t)param.channel[i].sample[j]) << 4;
+                                    temp.channel[i].sample[j] = ((uint16_t)param.channel[i].sample[j]) << 4;
 
                             emit samplesReceivedFromTiva(temp.channel[0].sample,temp.channel[1].sample,
                                                          temp.channel[2].sample,temp.channel[3].sample);
