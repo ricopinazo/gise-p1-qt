@@ -126,14 +126,34 @@ void QTivaRPC::processIncommingSerialData()
                         break;
                     }
 
-                    case COMMAND_ADC_SAMPLES:
-                        PARAMETERS_ADC_SAMPLES param;
+                    case COMMAND_ADC_8BITS_SAMPLES:
+                    {
+                        PARAMETERS_ADC_8BITS_SAMPLES param;
+                        if(check_and_extract_command_param(ptrtoparam, tam, sizeof(param),&param)>0)
+                        {
+                            PARAMETERS_ADC_12BITS_SAMPLES temp;
+
+                            for(int i = 0; i < 8; ++i)
+                                for(int j = 0; j < 8; ++j)
+                                temp.channel[i].sample[j] = ((uint16_t)param.channel[i].sample[j]) << 4;
+
+                            emit samplesReceivedFromTiva(temp.channel[0].sample,temp.channel[1].sample,
+                                                         temp.channel[2].sample,temp.channel[3].sample);
+                        }
+                        break;
+                    }
+
+                    case COMMAND_ADC_12BITS_SAMPLES:
+                    {
+                        PARAMETERS_ADC_12BITS_SAMPLES param;
                         if(check_and_extract_command_param(ptrtoparam, tam, sizeof(param),&param)>0)
                         {
                             emit samplesReceivedFromTiva(param.channel[0].sample,param.channel[1].sample,
                                                          param.channel[2].sample,param.channel[3].sample);
                         }
                         break;
+                    }
+
 
                     /*******************************************************************************************/
 

@@ -29,6 +29,7 @@ private slots:
     void on_colorWheel_colorChanged(const QColor &arg1);
     void on_sondeoButton_clicked();
     void on_rateLineEdit_editingFinished();
+    void on_tabWidget_currentChanged(int index);
 
     //Otros slots
     void cambiaLEDs();
@@ -39,6 +40,7 @@ private slots:
     void buttonsStatusReceived(bool button1, bool button2);
     void buttonsAnswerReceived(bool button1, bool button2);
     void samplesReceived(uint16_t *channel0, uint16_t *channel1, uint16_t *channel2, uint16_t *channel3);
+    void channelsActivedChanged();
 
 private:
     // funciones privadas
@@ -55,8 +57,9 @@ private:
     // Gráfica
     double xVal[1024];
     double yVal[4][1024];
-    QwtPlotCurve *channel[4];
+    QwtPlotCurve *channelCurve[4];
     QwtPlotGrid *grid;
+    QCheckBox *channelCheckBox[4];
 };
 
 #endif // GUIPANEL_H

@@ -15,7 +15,8 @@ typedef enum {
     COMMAND_BUTTONS_REQUEST,
     COMMAND_BUTTONS_ANSWER,
     COMMAND_SAMPLING_CONFIG,
-    COMMAND_ADC_SAMPLES
+    COMMAND_ADC_8BITS_SAMPLES,
+    COMMAND_ADC_12BITS_SAMPLES,
     //etc, etc...
 } commandTypes;
 
@@ -70,12 +71,17 @@ typedef union{
     } config;
 } PARAMETERS_SAMPLING_CONFIG;
 
+typedef struct{
+    struct{
+        uint8_t sample[8];
+    } channel[4];
+} PARAMETERS_ADC_8BITS_SAMPLES;
 
 typedef struct{
     struct{
         uint16_t sample[8];
     } channel[4];
-} PARAMETERS_ADC_SAMPLES;
+} PARAMETERS_ADC_12BITS_SAMPLES;
 
 
 #pragma pack()	//...Pero solo para los comandos que voy a intercambiar, no para el resto.

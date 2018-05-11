@@ -59,21 +59,30 @@ MainUserGUI::MainUserGUI(QWidget *parent) :  // Constructor de la clase
 
     for(int k = 0; k < 4; ++k)
     {
-        channel[k] = new QwtPlotCurve();
-        channel[k]->attach(ui->graph);
-        channel[k]->setRawSamples(xVal, yVal[k], 1024);
+        channelCurve[k] = new QwtPlotCurve();
+        channelCurve[k]->attach(ui->graph);
+        channelCurve[k]->setRawSamples(xVal, yVal[k], 1024);
     }
 
-    channel[0]->setPen(Qt::red);
-    channel[1]->setPen(Qt::cyan);
-    channel[2]->setPen(Qt::yellow);
-    channel[3]->setPen(Qt::green);
+    channelCurve[0]->setPen(Qt::red);
+    channelCurve[1]->setPen(Qt::cyan);
+    channelCurve[2]->setPen(Qt::yellow);
+    channelCurve[3]->setPen(Qt::green);
 
     grid = new QwtPlotGrid();
     grid->attach(ui->graph);
+
     ui->graph->setAutoReplot(false);
     ui->graph->setAxisScale(QwtPlot::yLeft, -0.5, 3.5, 0);
+    //ui->graph->setAxisTitle(QwtPlot::yLeft, "Voltaje");
     ui->graph->replot();
+
+    channelCheckBox[0] = ui->channel0CheckBox;
+    channelCheckBox[1] = ui->channel1CheckBox;
+    channelCheckBox[2] = ui->channel2CheckBox;
+    channelCheckBox[3] = ui->channel3CheckBox;
+
+    ui->tabWidget->isTabEnabled(0);
 
     //Conexion de signals de los widgets del interfaz con slots propios de este objeto
     connect(ui->rojo,SIGNAL(toggled(bool)),this,SLOT(cambiaLEDs()));
@@ -82,6 +91,8 @@ MainUserGUI::MainUserGUI(QWidget *parent) :  // Constructor de la clase
     connect(ui->activeCheckBox,SIGNAL(toggled(bool)),this,SLOT(samplingConfigChanged()));
     connect(ui->mode8RadioButton,SIGNAL(toggled(bool)),this,SLOT(samplingConfigChanged()));
     connect(ui->rateSlider,SIGNAL(valueChanged(int)),this,SLOT(samplingConfigChanged()));
+    for(int k = 0; k < 4; ++k)
+        connect(channelCheckBox[k],SIGNAL(toggled(bool)),this,SLOT(channelsActivedChanged()));
 
 
     //Conectamos Slots del objeto "Tiva" con Slots de nuestra aplicacion (o con widgets)
@@ -249,6 +260,17 @@ void MainUserGUI::samplesReceived(uint16_t *channel0, uint16_t *channel1, uint16
     }
 }
 
+void MainUserGUI::channelsActivedChanged()
+{
+    for(int k = 0; k < 4; ++k)
+    {
+        if(channelCheckBox[k]->isChecked())
+            channelCurve[k]->attach(ui->graph);
+        else
+            channelCurve[k]->detach();
+    }
+}
+
 void MainUserGUI::on_colorWheel_colorChanged(const QColor &qcolor)
 {
     tiva.LEDPwmColor(qcolor.red(), qcolor.green(), qcolor.blue());
@@ -265,4 +287,20 @@ void MainUserGUI::on_sondeoButton_clicked()
 void MainUserGUI::on_rateLineEdit_editingFinished()
 {
     ui->rateSlider->setValue(ui->rateLineEdit->text().toInt());
+}
+
+void MainUserGUI::on_tabWidget_currentChanged(int index)
+{
+    if(index == 0)
+    {
+        // Cuando se pasa a la pestaña de Colores, se detiene el muestreado en la tiva
+        tiva.samplingConfig(false, ui->mode12RadioButton->isChecked(), ui->rateSlider->value());
+    }
+    else if (index == 1)
+    {
+        QString str;
+        str.setNum(ui->rateSlider->value());
+        ui->rateLineEdit->setText(str);
+        tiva.samplingConfig(ui->activeCheckBox->isChecked(), ui->mode12RadioButton->isChecked(), ui->rateSlider->value());
+    }
 }
