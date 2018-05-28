@@ -44,6 +44,9 @@ signals:
     void buttonsStatusReceivedFromTiva(bool button1, bool button2); //Esta señal se genera cuando se recibe el estado de los botones
     void buttonsAnswerReceivedFromTiva(bool button1, bool button2); //Esta señal se genera cuando se recibe el la respuesta de los botones
     void samplesReceivedFromTiva(uint16_t *channel0, uint16_t *channel1, uint16_t *channel2, uint16_t *channel3);
+    void colorReceivedFromTiva(uint16_t red, uint16_t green, uint16_t blue, uint16_t intensity);
+    void gestureReceivedFromTiva(uint8_t);
+    void proximityAlarmReceivedFromTiva();
 
 public slots:
     void startRPCClient(QString puerto); //Este Slot arranca la comunicacion
@@ -53,6 +56,8 @@ public slots:
     void LEDPwmColor(uint8_t red, uint8_t green, uint8_t blue); // Este Slot provoca el envío de color
     void buttonsRequest();
     void samplingConfig(bool active, bool mode12, int rate);
+    void colorRequest();
+    void configThreshold(int threshold);
 
 private slots:
     void processIncommingSerialData(); //Este Slot se conecta a la señal readyRead(..) del puerto serie. Se encarga de procesar y decodificar los mensajes que llegan de la TIVA y

@@ -3,6 +3,7 @@
 #include <QSerialPort>      // Comunicacion por el puerto serie
 #include <QSerialPortInfo>  // Comunicacion por el puerto serie
 #include <QMessageBox>      // Se deben incluir cabeceras a los componentes que se vayan a crear en la clase
+#include <QTimer>           // Empleado para apagar la alarma pasao un tiempo
 // y que no estén incluidos en el interfaz gráfico. En este caso, la ventana de PopUp <QMessageBox>
 // que se muestra al recibir un PING de respuesta
 
@@ -37,7 +38,6 @@ MainUserGUI::MainUserGUI(QWidget *parent) :  // Constructor de la clase
 
     //Inicializa la ventana de PopUp que se muestra cuando llega la respuesta al PING
     ventanaPopUp.setIcon(QMessageBox::Information);
-    ventanaPopUp.setText(tr("Status: RESPUESTA A PING RECIBIDA")); //Este es el texto que muestra la ventana
     ventanaPopUp.setStandardButtons(QMessageBox::Ok);
     ventanaPopUp.setWindowTitle(tr("Evento"));
     ventanaPopUp.setParent(this,Qt::Popup);
@@ -82,7 +82,9 @@ MainUserGUI::MainUserGUI(QWidget *parent) :  // Constructor de la clase
     channelCheckBox[2] = ui->channel2CheckBox;
     channelCheckBox[3] = ui->channel3CheckBox;
 
-    ui->tabWidget->isTabEnabled(0);
+    // Inicializa el timer de la alarma
+    alarm_timer = new QTimer();
+    alarm_timer->setSingleShot(true);
 
     //Conexion de signals de los widgets del interfaz con slots propios de este objeto
     connect(ui->rojo,SIGNAL(toggled(bool)),this,SLOT(cambiaLEDs()));
@@ -93,18 +95,23 @@ MainUserGUI::MainUserGUI(QWidget *parent) :  // Constructor de la clase
     connect(ui->rateSlider,SIGNAL(valueChanged(int)),this,SLOT(samplingConfigChanged()));
     for(int k = 0; k < 4; ++k)
         connect(channelCheckBox[k],SIGNAL(toggled(bool)),this,SLOT(channelsActivedChanged()));
-
+    connect(alarm_timer,SIGNAL(timeout()),this,SLOT(stopAlarmLed()));
 
     //Conectamos Slots del objeto "Tiva" con Slots de nuestra aplicacion (o con widgets)
     connect(&tiva,SIGNAL(statusChanged(int,QString)),this,SLOT(tivaStatusChanged(int,QString)));
     connect(ui->pingButton,SIGNAL(clicked(bool)),&tiva,SLOT(ping()));
     connect(ui->Knob,SIGNAL(valueChanged(double)),&tiva,SLOT(LEDPwmBrightness(double)));
+    connect(ui->threshold_spin_box,SIGNAL(valueChanged(int)),&tiva,SLOT(configThreshold(int)));
     connect(&tiva,SIGNAL(pingReceivedFromTiva()),this,SLOT(pingResponseReceived()));
     connect(&tiva,SIGNAL(commandRejectedFromTiva(int16_t)),this,SLOT(CommandRejected(int16_t)));
     connect(&tiva,SIGNAL(buttonsStatusReceivedFromTiva(bool,bool)),this,SLOT(buttonsStatusReceived(bool, bool)));
     connect(&tiva,SIGNAL(buttonsAnswerReceivedFromTiva(bool,bool)),this,SLOT(buttonsAnswerReceived(bool, bool)));
     connect(&tiva,SIGNAL(samplesReceivedFromTiva(uint16_t*,uint16_t*,uint16_t*,uint16_t*)),
-                       this,SLOT(samplesReceived(uint16_t*,uint16_t*,uint16_t*,uint16_t*)));
+            this,SLOT(samplesReceived(uint16_t*,uint16_t*,uint16_t*,uint16_t*)));
+    connect(&tiva,SIGNAL(colorReceivedFromTiva(uint16_t,uint16_t,uint16_t,uint16_t)),
+            this,SLOT(colorReceived(uint16_t,uint16_t,uint16_t,uint16_t)));
+    connect(&tiva,SIGNAL(gestureReceivedFromTiva(uint8_t)),this,SLOT(gestureReceived(uint8_t)));
+    connect(&tiva,SIGNAL(proximityAlarmReceivedFromTiva()),this,SLOT(proximityAlarmReceived()));
 }
 
 MainUserGUI::~MainUserGUI() // Destructor de la clase
@@ -208,6 +215,7 @@ void MainUserGUI::on_pushButton_clicked()
 void MainUserGUI::pingResponseReceived()
 {
     // Muestra una ventana popUP para el caso de comando PING; no te deja definirla en un "caso"
+    ventanaPopUp.setText(tr("Status: RESPUESTA A PING RECIBIDA")); //Este es el texto que muestra la ventana
     ventanaPopUp.setStyleSheet("background-color: lightgrey");
     ventanaPopUp.setModal(true); //CAMBIO: Se sustituye la llamada a exec(...) por estas dos.
     ventanaPopUp.show();
@@ -271,6 +279,72 @@ void MainUserGUI::channelsActivedChanged()
     }
 }
 
+void MainUserGUI::colorReceived(uint16_t red, uint16_t green, uint16_t blue, uint16_t intensity)
+{
+    intensity = (int)(((float)intensity)/2.55);
+    if(intensity > 100)
+        intensity = 100;
+    if (red > 255)
+        red = 255;
+    if (green > 255)
+        green = 255;
+    if (blue > 255)
+        blue = 255;
+
+
+    ui->color_preview->setColor(QColor(red,green,blue));
+    ui->bright_label->setText(QString::number(intensity));
+}
+
+void MainUserGUI::gestureReceived(uint8_t gesture)
+{
+    QString gesture_text;
+
+    switch ((Gesture)gesture)
+    {
+        case SF_APDS9960_DIR_ALL:
+            gesture_text = "Todas";
+            break;
+        case SF_APDS9960_DIR_DOWN:
+            gesture_text = "Abajo";
+            break;
+        case SF_APDS9960_DIR_FAR:
+            gesture_text = "Atrás";
+            break;
+        case SF_APDS9960_DIR_LEFT:
+            gesture_text = "Izquierda";
+            break;
+        case SF_APDS9960_DIR_NEAR:
+            gesture_text = "Adelante";
+            break;
+        case SF_APDS9960_DIR_NONE:
+            gesture_text = "Ninguna";
+            break;
+        case SF_APDS9960_DIR_RIGHT:
+            gesture_text = "Derecha";
+            break;
+        case SF_APDS9960_DIR_UP:
+            gesture_text = "Arriba";
+            break;
+        default:
+            gesture_text = "Ninguna";
+            break;
+    }
+
+    ui->gesture_label->setText(gesture_text);
+}
+
+void MainUserGUI::proximityAlarmReceived()
+{
+    ui->alarm_led->setChecked(true);
+    alarm_timer->start(1000);  // Pasados 1000 milisegundos, se apaga el led
+}
+
+void MainUserGUI::stopAlarmLed()
+{
+    ui->alarm_led->setChecked(false);
+}
+
 void MainUserGUI::on_colorWheel_colorChanged(const QColor &qcolor)
 {
     tiva.LEDPwmColor(qcolor.red(), qcolor.green(), qcolor.blue());
@@ -303,4 +377,9 @@ void MainUserGUI::on_tabWidget_currentChanged(int index)
         ui->rateLineEdit->setText(str);
         tiva.samplingConfig(ui->activeCheckBox->isChecked(), ui->mode12RadioButton->isChecked(), ui->rateSlider->value());
     }
+}
+
+void MainUserGUI::on_color_button_clicked()
+{
+    tiva.colorRequest(); // Realiza el envío del comando de petición de color
 }

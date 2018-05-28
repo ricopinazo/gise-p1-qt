@@ -18,14 +18,14 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>686</width>
-    <height>378</height>
+    <width>799</width>
+    <height>498</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>2000</width>
-    <height>2000</height>
+    <width>799</width>
+    <height>498</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -114,7 +114,7 @@
     <widget class="QSplitter" name="splitter_2">
      <property name="geometry">
       <rect>
-       <x>50</x>
+       <x>140</x>
        <y>50</y>
        <width>97</width>
        <height>66</height>
@@ -142,8 +142,8 @@
     <widget class="QwtKnob" name="Knob">
      <property name="geometry">
       <rect>
-       <x>160</x>
-       <y>20</y>
+       <x>140</x>
+       <y>130</y>
        <width>129</width>
        <height>134</height>
       </rect>
@@ -164,8 +164,8 @@
     <widget class="color_widgets::ColorWheel" name="colorWheel">
      <property name="geometry">
       <rect>
-       <x>310</x>
-       <y>40</y>
+       <x>300</x>
+       <y>145</y>
        <width>100</width>
        <height>100</height>
       </rect>
@@ -186,8 +186,8 @@
     <widget class="QPushButton" name="sondeoButton">
      <property name="geometry">
       <rect>
-       <x>470</x>
-       <y>140</y>
+       <x>140</x>
+       <y>310</y>
        <width>85</width>
        <height>28</height>
       </rect>
@@ -199,8 +199,8 @@
     <widget class="QCheckBox" name="modoCheck">
      <property name="geometry">
       <rect>
-       <x>470</x>
-       <y>100</y>
+       <x>140</x>
+       <y>280</y>
        <width>151</width>
        <height>26</height>
       </rect>
@@ -215,8 +215,8 @@
     <widget class="QLabel" name="label_2">
      <property name="geometry">
       <rect>
-       <x>500</x>
-       <y>60</y>
+       <x>330</x>
+       <y>320</y>
        <width>81</width>
        <height>20</height>
       </rect>
@@ -228,8 +228,8 @@
     <widget class="Led" name="led2">
      <property name="geometry">
       <rect>
-       <x>470</x>
-       <y>60</y>
+       <x>300</x>
+       <y>320</y>
        <width>21</width>
        <height>21</height>
       </rect>
@@ -247,8 +247,8 @@
     <widget class="Led" name="led1">
      <property name="geometry">
       <rect>
-       <x>470</x>
-       <y>30</y>
+       <x>300</x>
+       <y>290</y>
        <width>21</width>
        <height>21</height>
       </rect>
@@ -266,14 +266,228 @@
     <widget class="QLabel" name="label">
      <property name="geometry">
       <rect>
-       <x>500</x>
-       <y>30</y>
+       <x>330</x>
+       <y>290</y>
        <width>81</width>
        <height>20</height>
       </rect>
      </property>
      <property name="text">
       <string>Pulsador 1</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_7">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>20</y>
+       <width>67</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Leds:</string>
+     </property>
+    </widget>
+    <widget class="color_widgets::ColorPreview" name="color_preview">
+     <property name="geometry">
+      <rect>
+       <x>610</x>
+       <y>305</y>
+       <width>25</width>
+       <height>25</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_8">
+     <property name="geometry">
+      <rect>
+       <x>490</x>
+       <y>75</y>
+       <width>51</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Gesto:</string>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="threshold_spin_box">
+     <property name="geometry">
+      <rect>
+       <x>650</x>
+       <y>190</y>
+       <width>48</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="maximum">
+      <number>255</number>
+     </property>
+     <property name="value">
+      <number>0</number>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_10">
+     <property name="geometry">
+      <rect>
+       <x>490</x>
+       <y>195</y>
+       <width>151</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Umbral de la alarma:</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="color_button">
+     <property name="geometry">
+      <rect>
+       <x>490</x>
+       <y>305</y>
+       <width>89</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Sondeo</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_11">
+     <property name="geometry">
+      <rect>
+       <x>470</x>
+       <y>265</y>
+       <width>111</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Sensor de color:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="bright_label">
+     <property name="geometry">
+      <rect>
+       <x>720</x>
+       <y>310</y>
+       <width>31</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>0</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_13">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>50</y>
+       <width>91</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Modo GPIO:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_14">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>140</y>
+       <width>101</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Modo PWM:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_15">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>260</y>
+       <width>67</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Botones:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_16">
+     <property name="geometry">
+      <rect>
+       <x>490</x>
+       <y>135</y>
+       <width>67</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Alarma:</string>
+     </property>
+    </widget>
+    <widget class="Led" name="alarm_led">
+     <property name="geometry">
+      <rect>
+       <x>560</x>
+       <y>125</y>
+       <width>41</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Color Led component</string>
+     </property>
+     <property name="whatsThis">
+      <string>Led indicator</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_17">
+     <property name="geometry">
+      <rect>
+       <x>470</x>
+       <y>25</y>
+       <width>121</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Sensor de gestos:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="gesture_label">
+     <property name="geometry">
+      <rect>
+       <x>550</x>
+       <y>75</y>
+       <width>67</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Ninguno</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_9">
+     <property name="geometry">
+      <rect>
+       <x>650</x>
+       <y>310</y>
+       <width>67</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Brillo(%):</string>
      </property>
     </widget>
    </widget>
@@ -518,6 +732,11 @@
    <class>Led</class>
    <extends>QWidget</extends>
    <header>analogwidgets/led.h</header>
+  </customwidget>
+  <customwidget>
+   <class>color_widgets::ColorPreview</class>
+   <extends>QWidget</extends>
+   <header>color_preview.hpp</header>
   </customwidget>
   <customwidget>
    <class>color_widgets::ColorWheel</class>

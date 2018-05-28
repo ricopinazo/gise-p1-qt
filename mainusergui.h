@@ -30,6 +30,7 @@ private slots:
     void on_sondeoButton_clicked();
     void on_rateLineEdit_editingFinished();
     void on_tabWidget_currentChanged(int index);
+    void on_color_button_clicked();
 
     //Otros slots
     void cambiaLEDs();
@@ -41,6 +42,10 @@ private slots:
     void buttonsAnswerReceived(bool button1, bool button2);
     void samplesReceived(uint16_t *channel0, uint16_t *channel1, uint16_t *channel2, uint16_t *channel3);
     void channelsActivedChanged();
+    void colorReceived(uint16_t red, uint16_t green, uint16_t blue, uint16_t intensity);
+    void gestureReceived(uint8_t);
+    void proximityAlarmReceived();
+    void stopAlarmLed();
 
 private:
     // funciones privadas
@@ -60,6 +65,19 @@ private:
     QwtPlotCurve *channelCurve[4];
     QwtPlotGrid *grid;
     QCheckBox *channelCheckBox[4];
+    QTimer *alarm_timer;
+
+    enum Gesture
+    {
+        SF_APDS9960_DIR_NONE,
+        SF_APDS9960_DIR_LEFT,
+        SF_APDS9960_DIR_RIGHT,
+        SF_APDS9960_DIR_UP,
+        SF_APDS9960_DIR_DOWN,
+        SF_APDS9960_DIR_NEAR,
+        SF_APDS9960_DIR_FAR,
+        SF_APDS9960_DIR_ALL
+    };
 };
 
 #endif // GUIPANEL_H

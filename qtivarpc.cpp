@@ -154,6 +154,32 @@ void QTivaRPC::processIncommingSerialData()
                         break;
                     }
 
+                    case COMMAND_GSENSOR_COLOR_ANSWER:
+                    {
+                        PARAMETERS_GSENSOR_COLOR_ANSWER param;
+                        if(check_and_extract_command_param(ptrtoparam, tam, sizeof(param),&param)>0)
+                        {
+                            emit colorReceivedFromTiva(param.red, param.green, param.blue, param.intensity);
+                        }
+                        break;
+                    }
+
+                    case COMMAND_GSENSOR_GESTURE:
+                    {
+                        PARAMETERS_GSENSOR_GESTURE param;
+                        if(check_and_extract_command_param(ptrtoparam, tam, sizeof(param),&param)>0)
+                        {
+                            emit gestureReceivedFromTiva((uint8_t)param.gesture);
+                        }
+                        break;
+                    }
+
+                    case COMMAND_GSENSOR_THRESHOLD_EXCEED:
+                    {
+                        emit proximityAlarmReceivedFromTiva();
+                        break;
+                    }
+
 
                     /*******************************************************************************************/
 
@@ -378,3 +404,35 @@ void QTivaRPC::samplingConfig(bool active, bool mode12, int rate)
     }
 }
 
+void QTivaRPC::colorRequest()
+{
+    char paquete[MAX_FRAME_SIZE];
+    int size;
+    if(connected)
+    {
+        // El comando ColorRequest no necesita parametros; de ahí el NULL, y el 0 final.
+        // No vamos a usar el mecanismo de numeracion de tramas; pasamos un 0 como n de trama
+        size=create_frame((unsigned char *)paquete, COMMAND_GSENSOR_COLOR_REQUEST, NULL, 0, MAX_FRAME_SIZE);
+        // Si la trama se creó correctamente, se escribe el paquete por el puerto serie USB
+        if (size>0) serial.write(paquete,size);
+    }
+}
+
+void QTivaRPC::configThreshold(int threshold)
+{
+    PARAMETERS_GSENSOR_CONFIG_THRESHOLD parametro;
+    uint8_t pui8Frame[MAX_FRAME_SIZE];
+    int size;
+    if(connected)
+    {
+        // Se rellenan los parametros del paquete (en este caso, el umbral)
+        parametro.threshold = (uint8_t)threshold;
+
+        // Se crea la trama con n de secuencia 0; comando COMANDO_LEDS; se le pasa la
+        // estructura de parametros, indicando su tamaño; el nº final es el tamaño maximo
+        // de trama
+        size=create_frame((uint8_t *)pui8Frame, COMMAND_GSENSOR_CONFIG_THRESHOLD, &parametro, sizeof(parametro), MAX_FRAME_SIZE);
+        // Si se pudo crear correctamente, se envia la trama
+        if (size>0) serial.write((char *)pui8Frame,size);
+    }
+}

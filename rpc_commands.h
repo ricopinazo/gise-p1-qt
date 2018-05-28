@@ -17,6 +17,11 @@ typedef enum {
     COMMAND_SAMPLING_CONFIG,
     COMMAND_ADC_8BITS_SAMPLES,
     COMMAND_ADC_12BITS_SAMPLES,
+    COMMAND_GSENSOR_COLOR_REQUEST,
+    COMMAND_GSENSOR_COLOR_ANSWER,
+    COMMAND_GSENSOR_GESTURE,
+    COMMAND_GSENSOR_CONFIG_THRESHOLD,
+    COMMAND_GSENSOR_THRESHOLD_EXCEED
     //etc, etc...
 } commandTypes;
 
@@ -83,6 +88,23 @@ typedef struct{
     } channel[4];
 } PARAMETERS_ADC_12BITS_SAMPLES;
 
+typedef struct
+{
+   uint16_t red;
+   uint16_t green;
+   uint16_t blue;
+   uint16_t intensity;
+} PARAMETERS_GSENSOR_COLOR_ANSWER;
+
+typedef struct
+{
+    uint8_t gesture;
+} PARAMETERS_GSENSOR_GESTURE;
+
+typedef struct
+{
+    uint8_t threshold;
+} PARAMETERS_GSENSOR_CONFIG_THRESHOLD;
 
 #pragma pack()	//...Pero solo para los comandos que voy a intercambiar, no para el resto.
 
