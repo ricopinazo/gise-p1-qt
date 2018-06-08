@@ -9,6 +9,8 @@
 #include <qwt_plot_grid.h>
 #include "qtivarpc.h"
 
+#define GRAPH_WIDTH 1024
+
 namespace Ui {
 class MainUserGUI;
 }
@@ -31,6 +33,8 @@ private slots:
     void on_rateLineEdit_editingFinished();
     void on_tabWidget_currentChanged(int index);
     void on_color_button_clicked();
+    void on_adcCheckBox_toggled(bool checked);
+    void on_sensorCheckBox_toggled(bool checked);
 
     //Otros slots
     void cambiaLEDs();
@@ -46,6 +50,7 @@ private slots:
     void gestureReceived(uint8_t);
     void proximityAlarmReceived();
     void stopAlarmLed();
+    void fifoReceived(uint8_t* fifo, uint8_t size);
 
 private:
     // funciones privadas
@@ -60,8 +65,10 @@ private:
     QTivaRPC tiva; //Objeto para gestionar la ejecucion acciones en el microcontrolador y/o recibir eventos desde él
     QIntValidator *rateLineEditValidator;   // Validador para la entrada de texto de la tasa de muestreo
     // Gráfica
-    double xVal[1024];
-    double yVal[4][1024];
+    double xVal[GRAPH_WIDTH];
+    double adcVal[4][GRAPH_WIDTH];
+    double sensorVal[4][GRAPH_WIDTH];
+
     QwtPlotCurve *channelCurve[4];
     QwtPlotGrid *grid;
     QCheckBox *channelCheckBox[4];

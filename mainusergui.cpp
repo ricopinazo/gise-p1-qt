@@ -48,20 +48,23 @@ MainUserGUI::MainUserGUI(QWidget *parent) :  // Constructor de la clase
     ui->rateLineEdit->setValidator(rateLineEditValidator);
 
     //Configura la gráfica
-    for(int k = 0; k < 1024; ++k)
+    for(int k = 0; k < GRAPH_WIDTH; ++k)
     {
         xVal[k] = (double)k;
-        yVal[0][k] = 0.0;
-        yVal[1][k] = 0.0;
-        yVal[2][k] = 0.0;
-        yVal[3][k] = 0.0;
+        adcVal[0][k] = 0.0;
+        adcVal[1][k] = 0.0;
+        adcVal[2][k] = 0.0;
+        adcVal[3][k] = 0.0;
+        sensorVal[0][k] = 0.0;
+        sensorVal[1][k] = 0.0;
+        sensorVal[2][k] = 0.0;
+        sensorVal[3][k] = 0.0;
     }
 
     for(int k = 0; k < 4; ++k)
     {
         channelCurve[k] = new QwtPlotCurve();
         channelCurve[k]->attach(ui->graph);
-        channelCurve[k]->setRawSamples(xVal, yVal[k], 1024);
     }
 
     channelCurve[0]->setPen(Qt::red);
@@ -74,7 +77,7 @@ MainUserGUI::MainUserGUI(QWidget *parent) :  // Constructor de la clase
 
     ui->graph->setAutoReplot(false);
     ui->graph->setAxisScale(QwtPlot::yLeft, -0.5, 3.5, 0);
-    //ui->graph->setAxisTitle(QwtPlot::yLeft, "Voltaje");
+    ui->graph->setAxisScale(QwtPlot::xBottom, 0.0, 1024.0, 0);
     ui->graph->replot();
 
     channelCheckBox[0] = ui->channel0CheckBox;
@@ -90,7 +93,6 @@ MainUserGUI::MainUserGUI(QWidget *parent) :  // Constructor de la clase
     connect(ui->rojo,SIGNAL(toggled(bool)),this,SLOT(cambiaLEDs()));
     connect(ui->verde,SIGNAL(toggled(bool)),this,SLOT(cambiaLEDs()));
     connect(ui->azul,SIGNAL(toggled(bool)),this,SLOT(cambiaLEDs()));
-    connect(ui->activeCheckBox,SIGNAL(toggled(bool)),this,SLOT(samplingConfigChanged()));
     connect(ui->mode8RadioButton,SIGNAL(toggled(bool)),this,SLOT(samplingConfigChanged()));
     connect(ui->rateSlider,SIGNAL(valueChanged(int)),this,SLOT(samplingConfigChanged()));
     for(int k = 0; k < 4; ++k)
@@ -112,6 +114,7 @@ MainUserGUI::MainUserGUI(QWidget *parent) :  // Constructor de la clase
             this,SLOT(colorReceived(uint16_t,uint16_t,uint16_t,uint16_t)));
     connect(&tiva,SIGNAL(gestureReceivedFromTiva(uint8_t)),this,SLOT(gestureReceived(uint8_t)));
     connect(&tiva,SIGNAL(proximityAlarmReceivedFromTiva()),this,SLOT(proximityAlarmReceived()));
+    connect(&tiva,SIGNAL(fifoReceivedFromTiva(uint8_t*,uint8_t)),this,SLOT(fifoReceived(uint8_t*,uint8_t)));
 }
 
 MainUserGUI::~MainUserGUI() // Destructor de la clase
@@ -198,7 +201,7 @@ void MainUserGUI::samplingConfigChanged()
     str.setNum(ui->rateSlider->value());
     ui->rateLineEdit->setText(str);
 
-    tiva.samplingConfig(ui->activeCheckBox->isChecked(), ui->mode12RadioButton->isChecked(), ui->rateSlider->value());
+    tiva.samplingConfig(ui->adcCheckBox->isChecked(), ui->mode12RadioButton->isChecked(), ui->rateSlider->value());
 }
 
 //Slots Asociado al boton que limpia los mensajes del interfaz
@@ -246,22 +249,22 @@ void MainUserGUI::buttonsAnswerReceived(bool button1, bool button2)
 
 void MainUserGUI::samplesReceived(uint16_t *channel0, uint16_t *channel1, uint16_t *channel2, uint16_t *channel3)
 {
-    if(ui->activeCheckBox->isChecked())
+    if(ui->adcCheckBox->isChecked())
     {
-        for(int k = 0; k < (1024 - 8); ++k)
+        for(int k = 0; k < (GRAPH_WIDTH - 8); ++k)
         {
-            yVal[0][k] =  yVal[0][k + 8];
-            yVal[1][k] =  yVal[1][k + 8];
-            yVal[2][k] =  yVal[2][k + 8];
-            yVal[3][k] =  yVal[3][k + 8];
+            adcVal[0][k] =  adcVal[0][k + 8];
+            adcVal[1][k] =  adcVal[1][k + 8];
+            adcVal[2][k] =  adcVal[2][k + 8];
+            adcVal[3][k] =  adcVal[3][k + 8];
         }
 
         for(int k = 0; k < 8; ++k)
         {
-            yVal[0][k + 1024 - 8] =  (double)channel0[k]/4095.0*3.3;
-            yVal[1][k + 1024 - 8] =  (double)channel1[k]/4095.0*3.3;
-            yVal[2][k + 1024 - 8] =  (double)channel2[k]/4095.0*3.3;
-            yVal[3][k + 1024 - 8] =  (double)channel3[k]/4095.0*3.3;
+            adcVal[0][k + GRAPH_WIDTH - 8] =  (double)channel0[k]/4095.0*3.3;
+            adcVal[1][k + GRAPH_WIDTH - 8] =  (double)channel1[k]/4095.0*3.3;
+            adcVal[2][k + GRAPH_WIDTH - 8] =  (double)channel2[k]/4095.0*3.3;
+            adcVal[3][k + GRAPH_WIDTH - 8] =  (double)channel3[k]/4095.0*3.3;
         }
 
         ui->graph->replot();
@@ -277,6 +280,7 @@ void MainUserGUI::channelsActivedChanged()
         else
             channelCurve[k]->detach();
     }
+    ui->graph->replot();
 }
 
 void MainUserGUI::colorReceived(uint16_t red, uint16_t green, uint16_t blue, uint16_t intensity)
@@ -369,17 +373,81 @@ void MainUserGUI::on_tabWidget_currentChanged(int index)
     {
         // Cuando se pasa a la pestaña de Colores, se detiene el muestreado en la tiva
         tiva.samplingConfig(false, ui->mode12RadioButton->isChecked(), ui->rateSlider->value());
+        tiva.configSensorMode(false);
     }
     else if (index == 1)
     {
         QString str;
         str.setNum(ui->rateSlider->value());
         ui->rateLineEdit->setText(str);
-        tiva.samplingConfig(ui->activeCheckBox->isChecked(), ui->mode12RadioButton->isChecked(), ui->rateSlider->value());
+        tiva.samplingConfig(ui->adcCheckBox->isChecked(), ui->mode12RadioButton->isChecked(), ui->rateSlider->value());
+        tiva.configSensorMode(ui->sensorCheckBox->isChecked());
     }
 }
 
 void MainUserGUI::on_color_button_clicked()
 {
     tiva.colorRequest(); // Realiza el envío del comando de petición de color
+}
+
+void MainUserGUI::on_adcCheckBox_toggled(bool checked)
+{
+    samplingConfigChanged();
+
+    if(checked)
+    {
+        ui->sensorCheckBox->setChecked(false);
+        ui->graph->setAxisScale(QwtPlot::yLeft, 0.0, 3.5, 0);
+        ui->graph->replot();
+        for(int k = 0; k < 4; ++k)
+            channelCurve[k]->setRawSamples(xVal, adcVal[k], GRAPH_WIDTH);
+
+    }
+
+    ui->label_3->setEnabled(checked);
+    ui->label_4->setEnabled(checked);
+    ui->label_5->setEnabled(checked);
+    ui->label_6->setEnabled(checked);
+    ui->rateLineEdit->setEnabled(checked);
+    ui->rateSlider->setEnabled(checked);
+    ui->mode8RadioButton->setEnabled(checked);
+    ui->mode12RadioButton->setEnabled(checked);
+}
+
+void MainUserGUI::on_sensorCheckBox_toggled(bool checked)
+{
+    tiva.configSensorMode(checked);
+    if(checked)
+    {
+        ui->adcCheckBox->setChecked(false);
+        ui->graph->setAxisScale(QwtPlot::yLeft, 0.0, 255.0, 0);
+        ui->graph->replot();
+        for(int k = 0; k < 4; ++k)
+            channelCurve[k]->setRawSamples(xVal, sensorVal[k], GRAPH_WIDTH);
+    }
+}
+
+void MainUserGUI::fifoReceived(uint8_t *fifo, uint8_t size)
+{
+    int samples = size/4;
+
+    if(ui->sensorCheckBox->isChecked())
+    {
+        for(int k = 0; k < (GRAPH_WIDTH - samples); ++k)
+        {
+            sensorVal[0][k] =  sensorVal[0][k + samples];
+            sensorVal[1][k] =  sensorVal[1][k + samples];
+            sensorVal[2][k] =  sensorVal[2][k + samples];
+            sensorVal[3][k] =  sensorVal[3][k + samples];
+        }
+
+        for(int k = 0; k < samples; k+=4)
+        {
+            sensorVal[0][k + GRAPH_WIDTH - samples] =  (double)fifo[k];
+            sensorVal[1][k + GRAPH_WIDTH - samples] =  (double)fifo[k+1];
+            sensorVal[2][k + GRAPH_WIDTH - samples] =  (double)fifo[k+2];
+            sensorVal[3][k + GRAPH_WIDTH - samples] =  (double)fifo[k+3];
+        }
+        ui->graph->replot();
+    }
 }

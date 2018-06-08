@@ -180,6 +180,14 @@ void QTivaRPC::processIncommingSerialData()
                         break;
                     }
 
+                    case COMMAND_GSENSOR_FIFO:
+                    {
+                        PARAMETERS_GSENSOR_FIFO param;
+                        if(check_and_extract_command_param(ptrtoparam, tam, sizeof(param),&param)>0)
+                            emit fifoReceivedFromTiva(param.fifo, param.size);
+                        break;
+                    }
+
 
                     /*******************************************************************************************/
 
@@ -432,6 +440,25 @@ void QTivaRPC::configThreshold(int threshold)
         // estructura de parametros, indicando su tamaño; el nº final es el tamaño maximo
         // de trama
         size=create_frame((uint8_t *)pui8Frame, COMMAND_GSENSOR_CONFIG_THRESHOLD, &parametro, sizeof(parametro), MAX_FRAME_SIZE);
+        // Si se pudo crear correctamente, se envia la trama
+        if (size>0) serial.write((char *)pui8Frame,size);
+    }
+}
+
+void QTivaRPC::configSensorMode(bool fifo_mode)
+{
+    PARAMETERS_GSENSOR_MODE_CONFIG param;
+    uint8_t pui8Frame[MAX_FRAME_SIZE];
+    int size;
+    if(connected)
+    {
+        // Se rellenan los parametros del paquete (en este caso, el modo)
+        param.fifo_mode = fifo_mode;
+
+        // Se crea la trama con n de secuencia 0; comando COMANDO_LEDS; se le pasa la
+        // estructura de parametros, indicando su tamaño; el nº final es el tamaño maximo
+        // de trama
+        size=create_frame((uint8_t *)pui8Frame, COMMAND_GSENSOR_MODE_CONFIG, &param, sizeof(param), MAX_FRAME_SIZE);
         // Si se pudo crear correctamente, se envia la trama
         if (size>0) serial.write((char *)pui8Frame,size);
     }

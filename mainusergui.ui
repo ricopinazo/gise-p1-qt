@@ -105,7 +105,7 @@
     </sizepolicy>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="tab1">
     <attribute name="title">
@@ -521,10 +521,13 @@
      </property>
     </widget>
     <widget class="QRadioButton" name="mode8RadioButton">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>40</x>
-       <y>90</y>
+       <y>205</y>
        <width>112</width>
        <height>23</height>
       </rect>
@@ -537,10 +540,13 @@
      </property>
     </widget>
     <widget class="QRadioButton" name="mode12RadioButton">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>40</x>
-       <y>110</y>
+       <y>225</y>
        <width>112</width>
        <height>23</height>
       </rect>
@@ -550,10 +556,13 @@
      </property>
     </widget>
     <widget class="QLineEdit" name="rateLineEdit">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>140</x>
-       <y>156</y>
+       <y>265</y>
        <width>41</width>
        <height>25</height>
       </rect>
@@ -563,10 +572,13 @@
      </property>
     </widget>
     <widget class="QLabel" name="label_3">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>210</y>
+       <y>320</y>
        <width>67</width>
        <height>17</height>
       </rect>
@@ -576,10 +588,13 @@
      </property>
     </widget>
     <widget class="QLabel" name="label_4">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>163</x>
-       <y>210</y>
+       <y>320</y>
        <width>41</width>
        <height>17</height>
       </rect>
@@ -589,10 +604,13 @@
      </property>
     </widget>
     <widget class="QLabel" name="label_5">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>160</y>
+       <y>270</y>
        <width>111</width>
        <height>17</height>
       </rect>
@@ -602,10 +620,13 @@
      </property>
     </widget>
     <widget class="QLabel" name="label_6">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>70</y>
+       <y>185</y>
        <width>101</width>
        <height>17</height>
       </rect>
@@ -614,24 +635,27 @@
       <string>Bits / muestra:</string>
      </property>
     </widget>
-    <widget class="QCheckBox" name="activeCheckBox">
+    <widget class="QCheckBox" name="adcCheckBox">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>20</y>
+       <y>50</y>
        <width>131</width>
        <height>23</height>
       </rect>
      </property>
      <property name="text">
-      <string>Muestreo activo</string>
+      <string>ADC activo</string>
      </property>
     </widget>
     <widget class="QSlider" name="rateSlider">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>190</y>
+       <y>300</y>
        <width>181</width>
        <height>16</height>
       </rect>
@@ -647,10 +671,13 @@
      </property>
     </widget>
     <widget class="QCheckBox" name="channel0CheckBox">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>260</y>
+       <y>100</y>
        <width>92</width>
        <height>23</height>
       </rect>
@@ -663,10 +690,13 @@
      </property>
     </widget>
     <widget class="QCheckBox" name="channel2CheckBox">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>290</y>
+       <y>130</y>
        <width>92</width>
        <height>23</height>
       </rect>
@@ -679,10 +709,13 @@
      </property>
     </widget>
     <widget class="QCheckBox" name="channel1CheckBox">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>260</y>
+       <y>100</y>
        <width>92</width>
        <height>23</height>
       </rect>
@@ -695,10 +728,13 @@
      </property>
     </widget>
     <widget class="QCheckBox" name="channel3CheckBox">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>290</y>
+       <y>130</y>
        <width>92</width>
        <height>23</height>
       </rect>
@@ -708,6 +744,19 @@
      </property>
      <property name="checked">
       <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="sensorCheckBox">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>20</y>
+       <width>131</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Sensor activo</string>
      </property>
     </widget>
    </widget>

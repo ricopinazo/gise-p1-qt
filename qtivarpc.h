@@ -47,6 +47,7 @@ signals:
     void colorReceivedFromTiva(uint16_t red, uint16_t green, uint16_t blue, uint16_t intensity);
     void gestureReceivedFromTiva(uint8_t);
     void proximityAlarmReceivedFromTiva();
+    void fifoReceivedFromTiva(uint8_t* fifo, uint8_t size);
 
 public slots:
     void startRPCClient(QString puerto); //Este Slot arranca la comunicacion
@@ -58,6 +59,7 @@ public slots:
     void samplingConfig(bool active, bool mode12, int rate);
     void colorRequest();
     void configThreshold(int threshold);
+    void configSensorMode(bool fifo_mode);
 
 private slots:
     void processIncommingSerialData(); //Este Slot se conecta a la señal readyRead(..) del puerto serie. Se encarga de procesar y decodificar los mensajes que llegan de la TIVA y

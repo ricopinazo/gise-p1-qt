@@ -21,7 +21,9 @@ typedef enum {
     COMMAND_GSENSOR_COLOR_ANSWER,
     COMMAND_GSENSOR_GESTURE,
     COMMAND_GSENSOR_CONFIG_THRESHOLD,
-    COMMAND_GSENSOR_THRESHOLD_EXCEED
+    COMMAND_GSENSOR_THRESHOLD_EXCEED,
+    COMMAND_GSENSOR_MODE_CONFIG,
+    COMMAND_GSENSOR_FIFO
     //etc, etc...
 } commandTypes;
 
@@ -105,6 +107,17 @@ typedef struct
 {
     uint8_t threshold;
 } PARAMETERS_GSENSOR_CONFIG_THRESHOLD;
+
+typedef struct
+{
+    uint8_t size;
+    uint8_t fifo[128];
+} PARAMETERS_GSENSOR_FIFO;
+
+typedef struct
+{
+    bool fifo_mode;
+} PARAMETERS_GSENSOR_MODE_CONFIG;
 
 #pragma pack()	//...Pero solo para los comandos que voy a intercambiar, no para el resto.
 
